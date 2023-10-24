@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Install python dependencies
+pip3 install --user -r requirements_dev.txt
+
 # Install bats helpers
 [ -d tests/bats-helpers ] && rm -rf tests/bats-helpers && mkdir -p tests/bats-helpers
 
