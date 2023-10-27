@@ -7,13 +7,83 @@ brefv.Envelope. The enclosed envelope will be serialized and base64-encoded
 and then outputted to stdout.
 """
 
+# pylint: disable=duplicate-code
+
 import sys
+import logging
+import warnings
+import argparse
 from base64 import b64encode, b64decode
 
+import parse
 from brefv import enclose
 
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--log-level", type=lambda level: getattr(logging, level), default=logging.WARNING
+)
+parser.add_argument(
+    "input_specification",
+    type=str,
+    nargs="?",
+    default="{payload}",
+    help="Example: '{payload}',"
+    "See https://github.com/r1chardj0n3s/parse#format-specification",
+)
+parser.add_argument(
+    "output_specification",
+    type=str,
+    nargs="?",
+    default="{envelope}",
+    help="Example: '{envelope}',"
+    "See https://github.com/r1chardj0n3s/parse#format-specification",
+)
+
+args = parser.parse_args()
+
+# Setup logger
+logging.basicConfig(
+    format="%(asctime)s %(levelname)s %(name)s %(message)s", level=args.log_level
+)
+logging.captureWarnings(True)
+warnings.filterwarnings("once")
+
+logger = logging.getLogger("enclose")
+
+# Compile pattern
+input_pattern = parse.compile(args.input_specification)
+
 for line in sys.stdin:
-    payload = b64decode(line.encode())
-    message = enclose(payload)
-    sys.stdout.write(f"{b64encode(message).decode()}\n")
+    logger.debug(line)
+    res = input_pattern.parse(line.rstrip())
+
+    if not res:
+        logger.error(
+            "Could not parse line: %s according to the input_specification: %s",
+            line,
+            args.input_specification,
+        )
+        continue
+
+    if not "payload" in res.named:
+        logger.error(
+            "Could not find the expected named argument 'payload' in the input specification: %s",
+            args.input_specification,
+        )
+        continue
+
+    parts = res.named
+
+    payload = parts.pop("payload")
+    try:
+        payload = b64decode(payload.encode())
+        envelope = enclose(payload)
+        envelope = b64encode(envelope).decode()
+    except Exception:  # pylint: disable=broad-exception-caught
+        logger.exception("Failed to handle payload...")
+        continue
+
+    parts["envelope"] = envelope
+
+    sys.stdout.write(args.output_specification.format(**parts) + "\n")
     sys.stdout.flush()
