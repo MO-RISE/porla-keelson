@@ -16,7 +16,7 @@ Binaries for working with payloads:
 
 ### 3rd-party tools
 
-This extension is built on top of [`porla-zenoh`](https://github.com/MO-RISE/porla-zenoh) and thus bundles [`zenoh-cli`](https://github.com/MO-RISE/zenoh-cli).
+This extension bundles [`zenoh-cli`](https://github.com/MO-RISE/zenoh-cli).
 
 ## Usage
 
@@ -29,5 +29,6 @@ services:
         image: ghcr.io/mo-rise/porla-keelson
         network_mode: host
         restart: always
-        command: ["from_bus 3 | base64 --encode | enclose | zenoh put --base64 --key my/key/expression --line '{message}'"]
+        command: ["from_bus 3 | base64 --encode | brefv encode '{payload_b64}' '{envelope}' | zenoh put --base64 --key my/key/expression --line '{message}'"]
+
 ```
