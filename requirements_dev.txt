@@ -2,3 +2,4 @@
 black==23.11.0
 pylint==3.0.2
 pytest==7.4.3
+zenoh-cli==0.2.0
