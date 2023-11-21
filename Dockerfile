@@ -1,4 +1,8 @@
-FROM ghcr.io/mo-rise/porla-zenoh:v0.2.0
+FROM ghcr.io/mo-rise/porla:v0.2.1
+
+RUN apt-get update && apt-get install -y \
+    git \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt requirements.txt
 RUN pip3 install --no-cache-dir -r requirements.txt
