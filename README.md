@@ -7,12 +7,7 @@ This extension provides interoperability with the keelson data format through [b
 
 ### Built-in functionality
 
-Binaries for working with envelopes:
-* `enclose`
-* `uncover`
-
-Binaries for working with payloads:
-* TODO
+* `brefv` CLI for decoding and encoding data to brefv format.
 
 ### 3rd-party tools
 
