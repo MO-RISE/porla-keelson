@@ -1,3 +1,6 @@
+> **DEPRECATED** This repository is no longer under active development/maintenance. Please refer to [`porla-zenoh`](https://github.com/MO-RISE/porla-zenoh) which from now on bundles `codecs` making the functionality in this repository redundant.
+
+
 # porla-keelson
 This is an extension to [`porla`](https://github.com/MO-RISE/porla).
 
